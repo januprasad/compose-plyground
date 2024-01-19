@@ -1,27 +1,33 @@
 package com.cakap.compose_plyground
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.Placeable
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.cakap.compose_plyground.ui.theme.ComposeplygroundTheme
 import kotlin.random.Random
@@ -37,26 +43,9 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background,
                 ) {
 //                    App() //pincode search
-                    val list = listOf("Samsung", "Apple", "Oppo", "OnePlus", "Redmi")
+//                    PhoneLayout() // flow row example
                     Column {
-                        FlowRow(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(10.dp),
-                        ) {
-                            list.forEach {
-                                val colorCode = Random.nextLong(0xAFFFFFFA)
-                                val color = Color(colorCode)
-                                Box(
-                                    modifier = Modifier
-                                        .wrapContentSize()
-                                        .padding(10.dp)
-                                        .background(color, RoundedCornerShape(6.dp)),
-                                ) {
-                                    Text(text = it, modifier = Modifier.padding(10.dp))
-                                }
-                            }
-                        }
+                        SimpleColumnDemo()
                     }
                 }
             }
@@ -65,52 +54,123 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun FlowRow(
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-) {
+@Preview
+fun SimpleColumnDemo() {
+    val shape = RoundedCornerShape(6.dp)
+    val alphabets = listOf(
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "G",
+        "L",
+        "M",
+        "N",
+        "O",
+        "P",
+        "Q",
+        "R",
+        "S",
+        "T",
+        "U",
+        "V",
+        "W",
+        "X",
+        "Y",
+        "Z",
+    )
+    CustomColumn {
+        alphabets.forEachIndexed { index, alphabet ->
+            val frontColor = Color(Random.nextLong(0xAFFFFFFA))
+            val backColor = Color(Random.nextLong(0xAFFFFFFA))
+            FlipCard(alphabet to index + 1, frontColor, backColor)
+        }
+    }
+}
+
+@Composable
+fun FlipCard(pair: Pair<String, Int>, frontColor: Color, backColor: Color) {
+    var rotated by remember { mutableStateOf(false) }
+
+    val rotation by animateFloatAsState(
+        targetValue = if (rotated) 180f else 0f,
+        animationSpec = tween(500),
+    )
+
+    val animateFront by animateFloatAsState(
+        targetValue = if (!rotated) 1f else 0f,
+        animationSpec = tween(500),
+    )
+
+    val animateBack by animateFloatAsState(
+        targetValue = if (rotated) 1f else 0f,
+        animationSpec = tween(500),
+    )
+
+    val animateColor by animateColorAsState(
+        targetValue = if (rotated) frontColor else backColor,
+        animationSpec = tween(500),
+    )
+
+    Card(
+        modifier = Modifier
+            .graphicsLayer {
+                rotationY = rotation
+                cameraDistance = 8 * density
+            }
+            .clickable {
+                rotated = !rotated
+            },
+        colors = CardDefaults.cardColors(
+            containerColor = animateColor,
+        ),
+    ) {
+        Column(
+            Modifier.size(100.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                text = if (!rotated) pair.first else pair.second.toString(),
+                modifier = Modifier
+                    .graphicsLayer {
+                        alpha = if (rotated) animateBack else animateFront
+                        rotationY = rotation
+                    },
+            )
+        }
+    }
+}
+
+@Composable
+fun CustomColumn(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Layout(
+        modifier = modifier,
         content = content,
-        measurePolicy = { measurables, constraints ->
-            val placeables = measurables.map {
-                it.measure(constraints)
+        measurePolicy = { measurebles, constraints ->
+            val placeables = measurebles.map { measureable ->
+                measureable.measure(constraints)
             }
-            val groupedPlaceables = mutableListOf<List<Placeable>>()
-            var currentGroup = mutableListOf<Placeable>()
-            var currentGroupWidth = 0
-
-            placeables.forEach { placeable ->
-                if (currentGroupWidth + placeable.width <= constraints.maxWidth) {
-                    currentGroup.add(placeable)
-                    currentGroupWidth += placeable.width
-                } else {
-                    groupedPlaceables.add(currentGroup)
-                    currentGroup = mutableListOf(placeable)
-                    currentGroupWidth = placeable.width
-                }
-            }
-
-            if (currentGroup.isNotEmpty()) {
-                groupedPlaceables.add(currentGroup)
-            }
-
-            layout(
-                width = constraints.maxWidth,
-                height = constraints.maxHeight,
-            ) {
+            layout(constraints.maxWidth, constraints.maxHeight) {
+                var xPosition = 0
                 var yPosition = 0
-                groupedPlaceables.forEach { row ->
-                    var xPosition = 0
-                    row.forEach { placeable ->
-                        placeable.place(
-                            x = xPosition,
-                            y = yPosition,
-                        )
+                placeables.forEach { placeable ->
+                    placeable.placeRelative(x = xPosition, y = yPosition)
+                    if (xPosition + placeable.width <= constraints.maxWidth) {
                         xPosition += placeable.width
+                    } else {
+                        xPosition = 0
+                        yPosition += placeable.height
                     }
-                    yPosition += row.maxOfOrNull { it.height } ?: 0
                 }
             }
         },
     )
 }
+
+val padding = 10
