@@ -6,15 +6,15 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -28,7 +28,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -89,13 +91,54 @@ fun SimpleColumnDemo() {
         "Y",
         "Z",
     )
-    CustomColumn {
+    SnakeFlow {
         alphabets.forEachIndexed { index, alphabet ->
             val frontColor = Color(Random.nextLong(0xAFFFFFFA))
             val backColor = Color(Random.nextLong(0xAFFFFFFA))
             FlipCard(alphabet to index + 1, frontColor, backColor)
         }
     }
+}
+
+@Composable
+fun SnakeFlow(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Layout(
+        modifier = modifier,
+        content = content,
+        measurePolicy = { measurebles, constraints ->
+            val placeables = measurebles.map { measureable ->
+                measureable.measure(constraints)
+            }
+            val maxWidth = constraints.maxWidth
+            val step = maxWidth / 4
+            var isForward = true
+            layout(constraints.maxWidth, constraints.maxHeight) {
+                var xPosition = 0
+                var yPosition = 0
+                placeables.forEach { placeable ->
+                    placeable.place(x = xPosition, y = yPosition)
+                    if (isForward && xPosition + step + step <= constraints.maxWidth) {
+                        xPosition += step
+                    } else if (isForward && xPosition != 0) {
+                        // new row
+                        yPosition += placeable.height
+                        isForward = false
+                        xPosition = constraints.maxWidth
+                    }
+
+                    if (!isForward) {
+                        xPosition -= step
+                    }
+
+                    if (!isForward && xPosition + step == 0) {
+                        isForward = true
+                        xPosition = 0
+                        yPosition += placeable.height
+                    }
+                }
+            }
+        },
+    )
 }
 
 @Composable
@@ -122,7 +165,7 @@ fun FlipCard(pair: Pair<String, Int>, frontColor: Color, backColor: Color) {
         animationSpec = tween(500),
     )
 
-    Card(
+    Box(
         modifier = Modifier
             .graphicsLayer {
                 rotationY = rotation
@@ -130,13 +173,13 @@ fun FlipCard(pair: Pair<String, Int>, frontColor: Color, backColor: Color) {
             }
             .clickable {
                 rotated = !rotated
-            }.padding(10.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = animateColor,
-        ),
+            }.background(animateColor),
     ) {
+        val configuration = LocalConfiguration.current
+        val widthInDp = configuration.screenWidthDp.dp
+        val boxWidth = widthInDp.div(4)
         Column(
-            Modifier.size(60.dp),
+            Modifier.size(boxWidth).border(1.dp, Color.LightGray),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
@@ -148,7 +191,8 @@ fun FlipCard(pair: Pair<String, Int>, frontColor: Color, backColor: Color) {
                         rotationY = rotation
                     },
                 style = TextStyle.Default.copy(
-                    fontSize = 20.sp,
+                    fontSize = 40.sp,
+                    fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.ExtraBold,
                 ),
             )
@@ -156,30 +200,3 @@ fun FlipCard(pair: Pair<String, Int>, frontColor: Color, backColor: Color) {
     }
 }
 
-@Composable
-fun CustomColumn(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    Layout(
-        modifier = modifier,
-        content = content,
-        measurePolicy = { measurebles, constraints ->
-            val placeables = measurebles.map { measureable ->
-                measureable.measure(constraints)
-            }
-            layout(constraints.maxWidth, constraints.maxHeight) {
-                var xPosition = 0
-                var yPosition = 0
-                placeables.forEach { placeable ->
-                    placeable.placeRelative(x = xPosition, y = yPosition)
-                    if (xPosition + placeable.width * 2 <= constraints.maxWidth) {
-                        xPosition += placeable.width
-                    } else {
-                        xPosition = 0
-                        yPosition += placeable.height
-                    }
-                }
-            }
-        },
-    )
-}
-
-val padding = 10
