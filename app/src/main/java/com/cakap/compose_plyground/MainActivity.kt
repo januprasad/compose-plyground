@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -27,8 +28,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.cakap.compose_plyground.ui.theme.ComposeplygroundTheme
 import kotlin.random.Random
 
@@ -67,7 +71,8 @@ fun SimpleColumnDemo() {
         "G",
         "H",
         "I",
-        "G",
+        "J",
+        "K",
         "L",
         "M",
         "N",
@@ -125,13 +130,13 @@ fun FlipCard(pair: Pair<String, Int>, frontColor: Color, backColor: Color) {
             }
             .clickable {
                 rotated = !rotated
-            },
+            }.padding(10.dp),
         colors = CardDefaults.cardColors(
             containerColor = animateColor,
         ),
     ) {
         Column(
-            Modifier.size(100.dp),
+            Modifier.size(60.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
@@ -142,6 +147,10 @@ fun FlipCard(pair: Pair<String, Int>, frontColor: Color, backColor: Color) {
                         alpha = if (rotated) animateBack else animateFront
                         rotationY = rotation
                     },
+                style = TextStyle.Default.copy(
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                ),
             )
         }
     }
@@ -161,7 +170,7 @@ fun CustomColumn(modifier: Modifier = Modifier, content: @Composable () -> Unit)
                 var yPosition = 0
                 placeables.forEach { placeable ->
                     placeable.placeRelative(x = xPosition, y = yPosition)
-                    if (xPosition + placeable.width <= constraints.maxWidth) {
+                    if (xPosition + placeable.width * 2 <= constraints.maxWidth) {
                         xPosition += placeable.width
                     } else {
                         xPosition = 0
