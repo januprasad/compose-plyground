@@ -14,9 +14,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -63,38 +67,59 @@ class MainActivity : ComponentActivity() {
 //                    Column {
 //                        SimpleColumnDemo()
 //                    }
+//                    shapeDrawCorner()
                     Column(
-                        Modifier
-                            .fillMaxSize().padding(10.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .drawWithContent {
-                                    val cornerRadius = CornerRadius(25f, 25f)
-                                    val path = Path().apply {
-                                        addRoundRect(
-                                            RoundRect(
-                                                rect = Rect(
-                                                    offset = Offset(0f, 0f),
-                                                    size = Size(200f, 200f),
-                                                ),
-                                                bottomRight = cornerRadius, // just an example
-                                                topRight = cornerRadius, // just an example
-                                            ),
-                                        )
-                                    }
-                                    drawPath(
-                                        path,
-                                        color = Color.Red,
-                                        style = Stroke(width = 1.dp.toPx()),
-                                    )
-                                },
-                        )
+                        Button(
+                            modifier = Modifier.width(140.dp).height(40.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xff98c93c),
+                            ),
+                            onClick = { /* Action */ },
+                            shape = SquircleShape(percent = 40, cornerSmoothing = CornerSmoothing.High), // Fully rounded squircle shape.
+                        ) {
+                            Text(text = "Primary Enabled", fontSize = 12.sp)
+                        }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun shapeDrawCorner() {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(10.dp),
+    ) {
+        Spacer(
+            modifier = Modifier
+                .fillMaxSize()
+                .drawWithContent {
+                    val cornerRadius = CornerRadius(25f, 25f)
+                    val path = Path().apply {
+                        addRoundRect(
+                            RoundRect(
+                                rect = Rect(
+                                    offset = Offset(0f, 0f),
+                                    size = Size(200f, 200f),
+                                ),
+                                bottomRight = cornerRadius, // just an example
+                                topRight = cornerRadius, // just an example
+                            ),
+                        )
+                    }
+                    drawPath(
+                        path,
+                        color = Color.Red,
+                        style = Stroke(width = 1.dp.toPx()),
+                    )
+                },
+        )
     }
 }
 
