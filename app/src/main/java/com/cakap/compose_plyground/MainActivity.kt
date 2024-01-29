@@ -14,11 +14,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +34,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -43,12 +48,15 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cakap.compose_plyground.component.RegularField
 import com.cakap.compose_plyground.ui.theme.ComposeplygroundTheme
 import kotlin.random.Random
 
@@ -68,24 +76,122 @@ class MainActivity : ComponentActivity() {
 //                        SimpleColumnDemo()
 //                    }
 //                    shapeDrawCorner()
+//                    ButtonSquircle()
+//                    ScrollTextExample()
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        Button(
-                            modifier = Modifier.width(140.dp).height(40.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xff98c93c),
-                            ),
-                            onClick = { /* Action */ },
-                            shape = SquircleShape(percent = 40, cornerSmoothing = CornerSmoothing.High), // Fully rounded squircle shape.
-                        ) {
-                            Text(text = "Primary Enabled", fontSize = 12.sp)
-                        }
+//                        DrawBorderExample()
+                        ButtonSquircle()
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun DrawBorderExample() {
+    UShapeBorderSample()
+}
+
+@Composable
+private fun UShapeBorderSample() {
+    Box(
+        modifier = Modifier
+            .size(200.dp)
+            .background(Color.White),
+        contentAlignment = Alignment.Center,
+    ) {
+        RegularField(hint = "Sample")
+    }
+}
+
+fun Modifier.semiBorder(strokeWidth: Dp, color: Color, cornerRadiusDp: Dp) = composed(
+    factory = {
+        val density = LocalDensity.current
+        val strokeWidthPx = density.run { strokeWidth.toPx() }
+        val cornerRadius = density.run { cornerRadiusDp.toPx() }
+
+        Modifier.drawBehind {
+            val width = size.width
+            val height = size.height
+
+            drawLine(
+                color = color,
+                start = Offset(x = 0f, y = height - cornerRadius),
+                end = Offset(x = 0f, y = cornerRadius),
+                strokeWidth = strokeWidthPx,
+            )
+
+            // Top left arc
+            drawArc(
+                color = color,
+                startAngle = 180f,
+                sweepAngle = 90f,
+                useCenter = false,
+                topLeft = Offset.Zero,
+                size = Size(cornerRadius * 2, cornerRadius * 2),
+                style = Stroke(width = strokeWidthPx),
+            )
+
+            drawLine(
+                color = color,
+                start = Offset(x = cornerRadius, y = 0f),
+                end = Offset(x = width - cornerRadius, y = 0f),
+                strokeWidth = strokeWidthPx,
+            )
+
+            // Top right arc
+            drawArc(
+                color = color,
+                startAngle = 90f,
+                sweepAngle = 90f,
+                useCenter = false,
+                topLeft = Offset(x = 0f, y = height - (cornerRadius * 2)),
+                size = Size(cornerRadius * 2, cornerRadius * 2),
+                style = Stroke(width = strokeWidthPx),
+            )
+
+            drawLine(
+                color = color,
+                start = Offset(x = cornerRadius, y = height),
+                end = Offset(x = width - cornerRadius, y = height),
+                strokeWidth = strokeWidthPx,
+            )
+        }
+    },
+)
+
+@Composable
+private fun ScrollTextExample() {
+    val state = rememberScrollState()
+    Text(
+        text = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." +
+            "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp).drawVerticalScrollbar(state)
+            .verticalScroll(state),
+        fontSize = 30.sp,
+    )
+}
+
+@Composable
+private fun ButtonSquircle() {
+    Button(
+        modifier = Modifier.width(140.dp).height(40.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xff98c93c),
+        ),
+        onClick = { /* Action */ },
+        shape = SquircleShape(
+            percent = 40,
+            cornerSmoothing = CornerSmoothing.High,
+        ), // Fully rounded squircle shape.
+    ) {
+        Text(text = "Primary Enabled", fontSize = 12.sp)
     }
 }
 

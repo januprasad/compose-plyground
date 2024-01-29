@@ -26,6 +26,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cakap.compose_plyground.semiBorder
 
 object Dimens {
     val sp16 = 16.sp
@@ -49,7 +50,8 @@ fun RegularField(
         modifier = Modifier
             .height(Dimens.dp40)
             .fillMaxWidth()
-            .shadow(elevation = Dimens.dp3, shape = RoundedCornerShape(Dimens.dp8))
+//            .shadow(elevation = Dimens.dp3, shape = RoundedCornerShape(Dimens.dp8))
+            .semiBorder(2.dp, Color.Red, 6.dp)
             .background(Color.White, RoundedCornerShape(Dimens.dp8)),
     ) {
         BasicTextField(
