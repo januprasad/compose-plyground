@@ -14,17 +14,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -78,16 +81,44 @@ class MainActivity : ComponentActivity() {
 //                    shapeDrawCorner()
 //                    ButtonSquircle()
 //                    ScrollTextExample()
+//                    DrawBorderExample()
+                    // ScrollTextExample2()
+                    //  ScrollTextExample()
+                    // SimpleOutlinedTextFieldSample() Keyboar test
                     Column(
+                        modifier = Modifier
+                            .fillMaxSize().verticalScroll(rememberScrollState()),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-//                        DrawBorderExample()
                         ButtonSquircle()
                     }
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SimpleOutlinedTextFieldSample() {
+    var username by remember { mutableStateOf("") }
+    var otp by remember { mutableStateOf("") }
+
+    Box(modifier = Modifier.fillMaxSize().height(200.dp).background(Color.Yellow))
+    Spacer(modifier = Modifier.height(300.dp))
+    OutlinedTextField(
+        value = username,
+        onValueChange = { username = it },
+        label = { Text("Username") },
+    )
+    OutlinedTextField(
+        value = otp,
+        onValueChange = { otp = it },
+        label = { Text("Password") },
+    )
+    Button(onClick = { /*TODO*/ }) {
+        Text(text = "Submit")
     }
 }
 
@@ -165,13 +196,45 @@ fun Modifier.semiBorder(strokeWidth: Dp, color: Color, cornerRadiusDp: Dp) = com
 )
 
 @Composable
+private fun ScrollTextExample2() {
+    Column(Modifier.wrapContentHeight().padding(10.dp)) {
+        scrollableTest()
+        scrollableTest()
+        scrollableTest()
+        scrollableTest()
+        scrollableTest()
+    }
+}
+
+@Composable
 private fun ScrollTextExample() {
+    LazyColumn(Modifier.wrapContentHeight()) {
+        item {
+            scrollableTest()
+        }
+        item {
+            scrollableTest()
+        }
+        item {
+            scrollableTest()
+        }
+        item {
+            scrollableTest()
+        }
+        item {
+            scrollableTest()
+        }
+    }
+}
+
+@Composable
+fun scrollableTest() {
     val state = rememberScrollState()
     Text(
         text = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." +
             "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
         modifier = Modifier
-            .fillMaxWidth()
+            .height(200.dp)
             .padding(8.dp).drawVerticalScrollbar(state)
             .verticalScroll(state),
         fontSize = 30.sp,
