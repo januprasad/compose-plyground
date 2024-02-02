@@ -256,6 +256,32 @@ private fun ButtonSquircle() {
     ) {
         Text(text = "Primary Enabled", fontSize = 12.sp)
     }
+    Button(
+        modifier = Modifier.width(140.dp).height(40.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xff98c93c),
+        ),
+        onClick = { /* Action */ },
+        shape = SquircleShape(
+            percent = 40,
+            cornerSmoothing = CornerSmoothing.High,
+        ), // Fully rounded squircle shape.
+    ) {
+        Text(text = "Primary Enabled", fontSize = 12.sp)
+    }
+    Button(
+        modifier = Modifier.width(140.dp).height(40.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xff98c93c),
+        ),
+        onClick = { /* Action */ },
+        shape = SquircleShape(
+            percent = 40,
+            cornerSmoothing = CornerSmoothing.High,
+        ), // Fully rounded squircle shape.
+    ) {
+        Text(text = "Primary Enabled", fontSize = 12.sp)
+    }
 }
 
 @Composable
