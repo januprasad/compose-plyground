@@ -87,11 +87,9 @@ class MainActivity : ComponentActivity() {
                     // SimpleOutlinedTextFieldSample() Keyboar test
                     Column(
                         modifier = Modifier
-                            .fillMaxSize().verticalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
+                            .fillMaxSize().background(Color.Yellow).padding(10.dp),
                     ) {
-                        ButtonSquircle()
+                        DrawBorderExample()
                     }
                 }
             }
@@ -129,14 +127,7 @@ private fun DrawBorderExample() {
 
 @Composable
 private fun UShapeBorderSample() {
-    Box(
-        modifier = Modifier
-            .size(200.dp)
-            .background(Color.White),
-        contentAlignment = Alignment.Center,
-    ) {
-        RegularField(hint = "Sample")
-    }
+    RegularField(hint = "Sample")
 }
 
 fun Modifier.semiBorder(strokeWidth: Dp, color: Color, cornerRadiusDp: Dp) = composed(
@@ -170,7 +161,7 @@ fun Modifier.semiBorder(strokeWidth: Dp, color: Color, cornerRadiusDp: Dp) = com
             drawLine(
                 color = color,
                 start = Offset(x = cornerRadius, y = 0f),
-                end = Offset(x = width - cornerRadius, y = 0f),
+                end = Offset(x = width, y = 0f),
                 strokeWidth = strokeWidthPx,
             )
 
@@ -188,7 +179,7 @@ fun Modifier.semiBorder(strokeWidth: Dp, color: Color, cornerRadiusDp: Dp) = com
             drawLine(
                 color = color,
                 start = Offset(x = cornerRadius, y = height),
-                end = Offset(x = width - cornerRadius, y = height),
+                end = Offset(x = width, y = height),
                 strokeWidth = strokeWidthPx,
             )
         }

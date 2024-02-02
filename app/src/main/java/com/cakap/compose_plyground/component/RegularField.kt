@@ -17,7 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -51,8 +50,16 @@ fun RegularField(
             .height(Dimens.dp40)
             .fillMaxWidth()
 //            .shadow(elevation = Dimens.dp3, shape = RoundedCornerShape(Dimens.dp8))
-            .semiBorder(2.dp, Color.Red, 6.dp)
-            .background(Color.White, RoundedCornerShape(Dimens.dp8)),
+            .background(
+                Color.White,
+                RoundedCornerShape(
+                    topStart = 6.dp,
+                    topEnd = 0.dp,
+                    bottomEnd = 0.dp,
+                    bottomStart = 6.dp,
+
+                ),
+            ).semiBorder(1.dp, Color.Red, 6.dp),
     ) {
         BasicTextField(
             modifier = Modifier
