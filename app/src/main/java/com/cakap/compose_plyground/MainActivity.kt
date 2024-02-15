@@ -9,9 +9,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -23,14 +26,23 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.ripple.LocalRippleTheme
+import androidx.compose.material.ripple.RippleTheme
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +64,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -87,14 +100,66 @@ class MainActivity : ComponentActivity() {
                     // SimpleOutlinedTextFieldSample() Keyboar test
                     Column(
                         modifier = Modifier
-                            .fillMaxSize().background(Color.Yellow).padding(10.dp),
+                            .fillMaxSize()
+                            .background(Color.Yellow)
+                            .padding(10.dp),
                     ) {
-                        DrawBorderExample()
+//                        DrawBorderExample()
+//                        TabsScreen()
+
+                        Column {
+                            CompositionLocalProvider(
+                                LocalRippleTheme provides CustomRippleTheme(
+                                    Color.DarkGray,
+                                ),
+                            ) {
+                                IconButton(onClick = { /*TODO*/ }) {
+                                    Icon(imageVector = Icons.Filled.Add, contentDescription = null)
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(20.dp))
+                            CompositionLocalProvider(
+                                LocalRippleTheme provides CustomRippleTheme(
+                                    Color.DarkGray,
+                                ),
+                            ) {
+                                IconButton(onClick = { /*TODO*/ }) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Favorite,
+                                        contentDescription = null,
+                                    )
+                                }
+                            }
+                            Row(
+                                modifier = Modifier.clickable(
+                                    enabled = true,
+                                    onClickLabel = null,
+                                    role = Role.Button,
+                                    onClick = {  },
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = rememberRipple(bounded = true),
+                                ),
+                            ) {
+                                Text(text = "Submit", modifier = Modifier.padding(10.dp))
+                            }
+                        }
                     }
                 }
             }
         }
     }
+}
+
+private class CustomRippleTheme(val color: Color) : RippleTheme {
+
+    @Composable
+    override fun defaultColor() = color
+
+    @Composable
+    override fun rippleAlpha() = RippleTheme.defaultRippleAlpha(
+        color,
+        lightTheme = isSystemInDarkTheme(),
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -103,7 +168,12 @@ fun SimpleOutlinedTextFieldSample() {
     var username by remember { mutableStateOf("") }
     var otp by remember { mutableStateOf("") }
 
-    Box(modifier = Modifier.fillMaxSize().height(200.dp).background(Color.Yellow))
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .height(200.dp)
+            .background(Color.Yellow),
+    )
     Spacer(modifier = Modifier.height(300.dp))
     OutlinedTextField(
         value = username,
@@ -188,7 +258,11 @@ fun Modifier.semiBorder(strokeWidth: Dp, color: Color, cornerRadiusDp: Dp) = com
 
 @Composable
 private fun ScrollTextExample2() {
-    Column(Modifier.wrapContentHeight().padding(10.dp)) {
+    Column(
+        Modifier
+            .wrapContentHeight()
+            .padding(10.dp),
+    ) {
         scrollableTest()
         scrollableTest()
         scrollableTest()
@@ -226,7 +300,8 @@ fun scrollableTest() {
             "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
         modifier = Modifier
             .height(200.dp)
-            .padding(8.dp).drawVerticalScrollbar(state)
+            .padding(8.dp)
+            .drawVerticalScrollbar(state)
             .verticalScroll(state),
         fontSize = 30.sp,
     )
@@ -235,7 +310,9 @@ fun scrollableTest() {
 @Composable
 private fun ButtonSquircle() {
     Button(
-        modifier = Modifier.width(140.dp).height(40.dp),
+        modifier = Modifier
+            .width(140.dp)
+            .height(40.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xff98c93c),
         ),
@@ -248,7 +325,9 @@ private fun ButtonSquircle() {
         Text(text = "Primary Enabled", fontSize = 12.sp)
     }
     Button(
-        modifier = Modifier.width(140.dp).height(40.dp),
+        modifier = Modifier
+            .width(140.dp)
+            .height(40.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xff98c93c),
         ),
@@ -261,7 +340,9 @@ private fun ButtonSquircle() {
         Text(text = "Primary Enabled", fontSize = 12.sp)
     }
     Button(
-        modifier = Modifier.width(140.dp).height(40.dp),
+        modifier = Modifier
+            .width(140.dp)
+            .height(40.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xff98c93c),
         ),

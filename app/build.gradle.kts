@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.cakap.compose_plyground"
-        minSdk = 25
+        minSdk = 33
         versionCode = 1
         versionName = "1.0"
 
